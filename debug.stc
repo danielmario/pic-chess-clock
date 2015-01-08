@@ -1,0 +1,10 @@
+load chess-clock.cod
+break w 0x28
+run
+run
+run
+run
+run
+run
+run
+quit

@@ -14,6 +14,9 @@ s_w	res	1
 s_fsr	res	1
 s_st	res	1
 
+; clock adjustment
+#define ADJ     236
+
 #define	TICK	PORTA,4
 #define	PLAYER	flags,5
 #define	TIMEUP	flags,6
@@ -23,6 +26,7 @@ s_st	res	1
 
 	code
 
+;   ;call does not work in interrupts?
 ;decode_index
 ;	addwf	PCL,f
 ;	retlw	b'100000'
@@ -61,7 +65,7 @@ display_loop
 	decfsz	y,f
 	goto	display_loop
 
-	; decode digit index (cannot call function here)
+	; decode digit index (cannot call decode_index here)
 	movf	dnext,w
 	movwf	z
 	; if z = 3, z = 4
@@ -81,7 +85,7 @@ display_loop
 	goto	t_end
 	btfss	PLAYER
 	goto	t_player2
-;t_player1
+t_player1
 	bcf	TICK
 	btfss	p1_sec,0
 	bsf	TICK
@@ -98,7 +102,7 @@ display_loop
 	goto	$+5
 
 	decf	p1_sec,f
-	movlw	250
+	movlw	ADJ
 	movwf	p1_ms
 	goto	t_end
 
@@ -109,7 +113,7 @@ display_loop
 	decf	p1_min,f
 	movlw	59
 	movwf	p1_sec
-	movlw	250
+	movlw	ADJ
 	movwf	p1_ms
 	goto	t_end
 
@@ -132,7 +136,7 @@ t_player2
 	goto	$+5
 
 	decf	p2_sec,f
-	movlw	250
+	movlw	ADJ
 	movwf	p2_ms
 	goto	t_end
 
@@ -143,18 +147,20 @@ t_player2
 	decf	p2_min,f
 	movlw	59
 	movwf	p2_sec
-	movlw	250
+	movlw	ADJ
 	movwf	p2_ms
 	goto	t_end
 
 	bsf	TIMEUP
 t_end
 
-	; clock adjustment
-	movlw	84
+	; clock adjustment 2
+	nop
+	movlw	2
 	movwf	x
 	decfsz	x,f
 	goto	$-1
+
 	clrf	TMR0
 	bcf	INTCON,T0IF
 
